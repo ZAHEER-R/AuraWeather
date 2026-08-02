@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aura Weather — Live Forecast & Air Quality</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" type="image/png" href="favicon.png">
+
+<!-- Google Identity Services: only activates once GOOGLE_CLIENT_ID is set in js/config.js -->
+<script src="https://kit.fontawesome.com/efc246ce45.js" crossorigin="anonymous"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+</head>
+<body>
+
+<!-- Weather background animation canvas -->
+<canvas id="fx-canvas"></canvas>
+<div id="scene-overlay"></div>
+<div id="life-image"></div>
+<div id="bg-image"></div>
+
+<!-- ===================== SPLASH / ONLOAD SCREEN ===================== -->
+<section id="splash-screen" class="splash-screen">
+  <div class="splash-stamp-ring"></div>
+  <svg class="splash-cloud" viewBox="0 0 140 90" width="120" height="80">
+    <path d="M35 70 Q10 70 10 48 Q10 28 30 26 Q34 8 56 8 Q78 8 84 24 Q106 24 108 44 Q110 62 90 66 Q70 70 35 70 Z"
+      fill="none" stroke="url(#cloudGrad)" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round"/>
+    <defs>
+      <linearGradient id="cloudGrad" x1="0" y1="0" x2="140" y2="90">
+        <stop stop-color="#8ec5ff"/><stop offset="1" stop-color="#c9a8ff"/>
+      </linearGradient>
+    </defs>
+  </svg>
+  <h1 class="splash-title" aria-label="Aura Weather">
+    <span>A</span><span>u</span><span>r</span><span>a</span><span class="sp"> </span><span>W</span><span>e</span><span>a</span><span>t</span><span>h</span><span>e</span><span>r</span>
+  </h1>
+</section>
+
+<!-- ===================== AUTH SCREEN ===================== -->
+<section id="auth-screen" class="auth-screen hidden">
+  <div class="glass auth-card">
+    <div class="auth-logo">
+      <svg width="46" height="46" viewBox="0 0 24 24" fill="none"><path d="M17.5 19H6.5A4.5 4.5 0 1 1 7.64 10.06 6 6 0 0 1 19 12.5a3.5 3.5 0 0 1-1.5 6.5Z" stroke="url(#g1)" stroke-width="1.6" stroke-linejoin="round"/><defs><linearGradient id="g1" x1="0" y1="0" x2="24" y2="24"><stop stop-color="#8ec5ff"/><stop offset="1" stop-color="#c9a8ff"/></linearGradient></defs></svg>
+      <h1>Aura Weather</h1>
+    </div>
+    <p class="auth-sub">Real-time forecasts, live air quality, and a sky like never before.</p>
+
+    <!-- Google is the primary, recommended sign-in path -->
+    <div id="google-btn-real" class="google-real-wrap"></div>
+    <button id="google-fallback-btn" class="google-btn hidden">
+      <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.56 2.7-3.87 2.7-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.36 0-4.35-1.6-5.07-3.74H.9v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.93 10.68A5.4 5.4 0 0 1 3.65 9c0-.58.1-1.15.28-1.68V4.99H.9A9 9 0 0 0 0 9c0 1.45.35 2.83.9 4.01l3.03-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .9 4.99l3.03 2.33C4.65 5.18 6.64 3.58 9 3.58z"/></svg>
+      Continue with Google
+    </button>
+
+    <div class="divider"><span>or use email</span></div>
+
+    <button id="email-toggle-btn" class="ghost-btn">Log in or sign up with email</button>
+
+    <div id="email-auth-wrap" class="email-auth-wrap hidden">
+      <div class="auth-tabs">
+        <button class="tab-btn active" data-tab="login">Log In</button>
+        <button class="tab-btn" data-tab="signup">Sign Up</button>
+      </div>
+
+      <form id="login-form" class="auth-form active">
+        <input type="email" id="login-email" placeholder="Email address" required>
+        <input type="password" id="login-password" placeholder="Password" required>
+        <button type="submit" class="primary-btn">Log In</button>
+        <p class="form-msg" id="login-msg"></p>
+      </form>
+
+      <form id="signup-form" class="auth-form">
+        <input type="text" id="signup-name" placeholder="Full name" required>
+        <input type="email" id="signup-email" placeholder="Email address" required>
+        <input type="number" id="signup-age" placeholder="Age" min="1" max="120" required>
+        <input type="text" id="signup-place" placeholder="Native place" required>
+        <input type="password" id="signup-password" placeholder="Password (min 6 chars)" required minlength="6">
+        <button type="submit" class="primary-btn">Create Account</button>
+        <p class="form-msg" id="signup-msg"></p>
+      </form>
+    </div>
+
+    <button id="skip-btn" class="ghost-btn skip-btn">Skip sign up for now →</button>
+
+    <p class="auth-note">We'll ask for location access after you're in, to show your local sky.</p>
+  </div>
+</section>
+
+<!-- ===================== LOCATION PERMISSION MODAL ===================== -->
+<section id="geo-modal" class="geo-modal hidden">
+  <div class="glass geo-card">
+    <div class="geo-icon"><i class="fa-solid fa-map-pin"></i></div>
+    <h2>Enable your local sky</h2>
+    <p>Aura Weather uses your location to show live conditions, hourly outlook and air quality for exactly where you are.</p>
+    <button id="geo-allow" class="primary-btn">Allow Location Access</button>
+    <button id="geo-skip" class="ghost-btn">Search manually instead</button>
+  </div>
+</section>
+
+<!-- ===================== APP SHELL ===================== -->
+<div id="app" class="app hidden">
+
+  <!-- Top nav -->
+  <header class="topbar glass">
+    <div class="brand">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M17.5 19H6.5A4.5 4.5 0 1 1 7.64 10.06 6 6 0 0 1 19 12.5a3.5 3.5 0 0 1-1.5 6.5Z" stroke="#cfe6ff" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <span>Aura Weather</span>
+    </div>
+
+    <div class="search-wrap">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="search-input" type="search" placeholder="Search city, area, street, landmark…" autocomplete="off">
+      <button id="search-clear" class="search-clear hidden" aria-label="Clear search">✕</button>
+      <div id="search-suggestions" class="search-suggestions hidden"></div>
+    </div>
+
+    <nav class="tabbar" id="tabbar">
+      <button class="nav-btn active" data-view="home">Home</button>
+      <button class="nav-btn" data-view="news">News</button>
+      <button class="nav-btn" data-view="pollution">Air Quality</button>
+      <button class="nav-btn" data-view="settings">Settings</button>
+      <button class="nav-btn" data-view="account">Account</button>
+    </nav>
+
+    <button id="menu-toggle" class="menu-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <main class="content">
+
+    <!-- ============= HOME VIEW ============= -->
+    <section id="view-home" class="view active">
+
+      <div class="hero glass">
+        <div class="hero-left">
+          <div class="hero-place" id="place-name">Locating…</div>
+          <div class="hero-temp" id="hero-temp">--°</div>
+          <div class="hero-cond" id="hero-cond">Fetching sky…</div>
+          <div class="hero-minmax"><span id="hero-max">H: --°</span> · <span id="hero-min">L: --°</span> · <span id="hero-feels">Feels --°</span></div>
+          <div class="hero-updated" id="hero-updated">Updated --:--</div>
+        </div>
+        <div class="hero-right">
+          <div class="comfort-score glass-inner">
+            <div class="comfort-ring">
+              <svg viewBox="0 0 120 120" width="110" height="110">
+                <circle cx="60" cy="60" r="52" stroke="rgba(255,255,255,.15)" stroke-width="10" fill="none"/>
+                <circle id="comfort-arc" cx="60" cy="60" r="52" stroke="url(#cg)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7" transform="rotate(-90 60 60)"/>
+                <defs><linearGradient id="cg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7ee8b8"/><stop offset="1" stop-color="#5aa9ff"/></linearGradient></defs>
+              </svg>
+              <div class="comfort-num" id="comfort-num">--</div>
+            </div>
+            <div class="comfort-label">Go‑Outside Score™</div>
+            <div class="comfort-sub" id="comfort-sub">Unique to Aura — blends temp, humidity, wind & air quality into one number.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row-stats">
+        <div class="stat-chip glass-inner"><span><i class="fa-solid fa-glass-water-droplet"></i> Humidity</span><b id="stat-humidity">--%</b></div>
+        <div class="stat-chip glass-inner"><span><i class="fa-solid fa-wind"></i> Wind</span><b id="stat-wind">-- km/h</b></div>
+        <div class="stat-chip glass-inner"><span><i class="fa-solid fa-sun"></i> UV Index</span><b id="stat-uv">--</b></div>
+        <div class="stat-chip glass-inner"><span><i class="fa-solid fa-eye"></i> Visibility</span><b id="stat-visibility">-- km</b></div>
+        <div class="stat-chip glass-inner"><span><i class="fa-solid fa-temperature-half"></i> Pressure</span><b id="stat-pressure">-- hPa</b></div>
+        <div class="stat-chip glass-inner"><span><i class="fa-solid fa-smog"></i> AQI</span><b id="stat-aqi">--</b></div>
+      </div>
+
+      <div class="panel glass">
+        <div class="panel-head">
+          <h3>24‑Hour Sky Timeline</h3>
+          <span class="panel-sub">Midnight → Midnight, local time</span>
+        </div>
+        <div id="hourly-bars" class="hourly-bars"></div>
+      </div>
+
+      <div class="panel glass">
+        <div class="panel-head">
+          <h3>10‑Day Forecast</h3>
+        </div>
+        <div id="daily-list" class="daily-list"></div>
+      </div>
+
+      <div class="panel glass">
+        <div class="panel-head">
+          <h3>Temperature Curve — Today</h3>
+        </div>
+        <canvas id="temp-curve" height="210"></canvas>
+      </div>
+
+      <div class="panel glass">
+        <div class="panel-head">
+          <h3>Sun & Moon</h3>
+        </div>
+        <div class="sunmoon-row">
+          <canvas id="sun-arc" height="140"></canvas>
+          <div class="sunmoon-info">
+            <div><span>🌅 Sunrise</span><b id="sunrise-time">--</b></div>
+            <div><span>🌇 Sunset</span><b id="sunset-time">--</b></div>
+            <div><span>🌙 Moon phase</span><b id="moon-phase">--</b></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel glass">
+        <div class="text" style ="text-align: center; font-size: 0.9rem; 
+        color: #ccc;display:flex;font-weight: bold; font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; flex-direction: column; align-items: center; justify-content: center;">
+        <p>Made with ❤️ by the Aura Weather Team</p>
+        <p>Zaheer  Sanjay  Lakshmanan  Prof. Senthil Kumar_P</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= NEWS VIEW ============= -->
+    <section id="view-news" class="view">
+      <div class="panel glass">
+        <div class="panel-head">
+          <h3>Weather & World News</h3>
+          <span class="panel-sub" id="news-status">Live feed</span>
+        </div>
+        <div id="news-list" class="news-list"></div>
+      </div>
+    </section>
+
+    <!-- ============= POLLUTION VIEW ============= -->
+    <section id="view-pollution" class="view">
+      <div class="panel glass">
+        <div class="panel-head">
+          <h3>Air Quality — <span id="pollution-place">--</span></h3>
+          <span class="panel-sub">Real-time pollutant breakdown</span>
+        </div>
+        <div class="aqi-hero">
+          <div class="aqi-big" id="aqi-big">--</div>
+          <div class="aqi-tag" id="aqi-tag">--</div>
+        </div>
+        <div class="pollutant-grid" id="pollutant-grid"></div>
+      </div>
+      <div class="panel glass">
+        <div class="panel-head"><h3>Pollution Trend — Morning to Midnight</h3></div>
+        <div id="pollution-bars" class="hourly-bars"></div>
+      </div>
+    </section>
+
+    <!-- ============= SETTINGS VIEW ============= -->
+    <section id="view-settings" class="view">
+      <div class="panel glass settings-panel">
+        <div class="settings-row">
+          <div><b>Theme</b><p>Switch between light and dark glass aesthetics</p></div>
+          <label class="switch"><input type="checkbox" id="theme-toggle"><span class="slider"></span></label>
+        </div>
+        <div class="settings-row">
+          <div><b>Units</b><p>Temperature unit</p></div>
+          <select id="unit-select">
+            <option value="celsius">Celsius (°C)</option>
+            <option value="fahrenheit">Fahrenheit (°F)</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <div><b>Weather alerts</b><p>Browser notifications for severe conditions</p></div>
+          <label class="switch"><input type="checkbox" id="alerts-toggle"><span class="slider"></span></label>
+        </div>
+        <div class="settings-row">
+          <div><b>Saved locations</b><p>Cities you're tracking</p></div>
+        </div>
+        <div id="saved-cities" class="saved-cities"></div>
+      </div>
+    </section>
+
+    <!-- ============= ACCOUNT VIEW ============= -->
+    <section id="view-account" class="view">
+      <div class="panel glass account-panel">
+        <div class="account-photo-wrap">
+          <img id="account-photo" src="" alt="Profile photo">
+          <label class="photo-upload-btn">
+            Change photo
+            <input type="file" id="photo-input" accept="image/*" hidden>
+          </label>
+        </div>
+        <div class="account-fields">
+          <div><span>Name</span><b id="account-name">--</b></div>
+          <div><span>Email</span><b id="account-email">--</b></div>
+          <div><span>Age</span><b id="account-age">--</b></div>
+          <div><span>Native place</span><b id="account-place">--</b></div>
+          <div><span>Login method</span><b id="account-login-method">Email</b></div>
+        </div>
+        <button id="logout-btn" class="primary-btn danger">Log Out</button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/cartoon.js"></script>
+<script src="js/weatherfx.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
