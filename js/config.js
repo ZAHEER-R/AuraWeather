@@ -13,7 +13,7 @@ const CONFIG = {
 
   // NewsAPI key — powers the live, weather-focused news feed (CNN-sourced)
   NEWS_API_KEY: "1cfb8540daa64cd1b245354db93b66f4",
-  NEWS_API_URL: "https://newsapi.org/v2/everything",
+  NEWS_API_URL: "https://api.thenewsapi.com/v1/news/all",
 
   // Google OAuth Client ID (https://console.cloud.google.com/apis/credentials)
   // Only the Client ID ever belongs here — never put a client SECRET in
