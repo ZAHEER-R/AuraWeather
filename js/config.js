@@ -12,7 +12,7 @@ const CONFIG = {
   AIR_QUALITY_URL: "https://air-quality-api.open-meteo.com/v1/air-quality",
 
   // NewsAPI key — powers the live, weather-focused news feed (CNN-sourced)
-  NEWS_API_KEY: "1cfb8540daa64cd1b245354db93b66f4",
+  NEWS_API_KEY: "5nbkDgso5eOwAUH6U8DjPhdnmY4Wi1rOi2vqcXXj",
   NEWS_API_URL: "https://api.thenewsapi.com/v1/news/all",
 
   // Google OAuth Client ID (https://console.cloud.google.com/apis/credentials)
