@@ -60,18 +60,21 @@ const WeatherAPI = (() => {
       return SAMPLE_NEWS;
     }
     try{
-      // TheNewsAPI's /v1/news/all endpoint, filtered to weather-related
-      // search terms. Its free plan allows direct browser requests from
-      // any origin (unlike NewsAPI.org), and caps each response at 3
-      // articles — that's fine here since we just want a small feed.
-      const params = new URLSearchParams({
-        search: topic, language: 'en', sort: 'published_at',
-        limit: '3', api_token: CONFIG.NEWS_API_KEY
+      // TheNewsAPI's free plan caps each response at 3 articles — to get
+      // a fuller feed we fetch a few pages in parallel and merge them
+      // (still well within the free plan's 100 requests/day).
+      const PAGES = 4; // 4 pages x 3 articles = up to 12 stories
+      const requests = Array.from({length: PAGES}, (_, i) => {
+        const params = new URLSearchParams({
+          search: topic, language: 'en', sort: 'published_at',
+          limit: '3', page: String(i + 1), api_token: CONFIG.NEWS_API_KEY
+        });
+        return fetch(`${CONFIG.NEWS_API_URL}?${params.toString()}`).then(r => r.json()).catch(() => null);
       });
-      const res = await fetch(`${CONFIG.NEWS_API_URL}?${params.toString()}`);
-      const data = await res.json();
-      if(!data.data || !data.data.length) return SAMPLE_NEWS;
-      return data.data.map(a => ({
+      const pages = await Promise.all(requests);
+      const articles = pages.flatMap(p => (p && p.data) ? p.data : []);
+      if(!articles.length) return SAMPLE_NEWS;
+      return articles.map(a => ({
         title: a.title, desc: a.description || '', url: a.url,
         image: a.image_url, source: a.source || 'News', time: a.published_at
       }));
