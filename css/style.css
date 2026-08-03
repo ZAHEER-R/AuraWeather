@@ -257,6 +257,7 @@ canvas{ display:block; max-width:100%; }
 
 /* ---------- Hourly bars (24h timeline) ---------- */
 .hourly-bars{ display:flex; gap:10px; overflow-x:auto; padding-bottom:6px; }
+body.light .hourly-bars{color:black;}
 .hour-col{
   display:flex; flex-direction:column; align-items:center; gap:8px; min-width:52px; padding:10px 4px;
   border-radius:12px; transition:background .2s;
