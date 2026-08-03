@@ -104,9 +104,39 @@
     });
   }
 
+  const GEO_ASKED_KEY = 'aura_geo_asked';
+
   function enterApp(){
     $('#auth-screen').classList.add('hidden');
-    document.getElementById('geo-modal').classList.remove('hidden');
+    showGeoModalOrResume();
+  }
+
+  // The location (and, indirectly, notification) prompt should only ever
+  // appear once per browser. After that first time — allowed or skipped —
+  // we remember the choice and go straight into the app on every later
+  // visit, reusing whatever place was last shown instead of re-asking.
+  function showGeoModalOrResume(){
+    if(localStorage.getItem(GEO_ASKED_KEY)){
+      resumeWithoutPrompt();
+    } else {
+      document.getElementById('geo-modal').classList.remove('hidden');
+    }
+  }
+
+  function resumeWithoutPrompt(){
+    $('#app').classList.remove('hidden');
+    hydrateAccount();
+    if(window.CartoonFX) CartoonFX.setVisible(true);
+    let place = null;
+    try{ place = JSON.parse(localStorage.getItem('aura_last_place')); }catch(e){}
+    if(place && place.lat != null && place.lon != null){
+      selectPlace(place);
+    } else {
+      loadDefaultCity();
+    }
+    requestAnimationFrame(() => {
+      if(state.forecast){ renderTempCurve(state.forecast); renderSunArc(state.forecast); }
+    });
   }
 
   /* ---------------- GEO PERMISSION ---------------- */
@@ -125,6 +155,7 @@
     $('#geo-skip').addEventListener('click', () => { finishGeo(); loadDefaultCity(); });
   }
   function finishGeo(){
+    localStorage.setItem(GEO_ASKED_KEY, '1');
     $('#geo-modal').classList.add('hidden');
     $('#app').classList.remove('hidden');
     hydrateAccount();
@@ -212,6 +243,7 @@
   async function selectPlace(place){
     state.place = place;
     $('#place-name').textContent = place.label || place.name;
+    localStorage.setItem('aura_last_place', JSON.stringify(place));
     await refreshWeather();
     if(!state.savedCities.find(c => c.name === place.name && c.lat === place.lat)){
       state.savedCities.unshift(place);
@@ -514,8 +546,34 @@
       if(state.place) await refreshWeather();
     });
 
-    $('#alerts-toggle').addEventListener('change', e => {
-      if(e.target.checked && 'Notification' in window) Notification.requestPermission();
+    const alertsToggle = $('#alerts-toggle');
+    // Reflect whatever was already decided (either by the user's saved
+    // preference or by the browser's own remembered permission) so the
+    // toggle doesn't reset — and doesn't need to re-ask — on every visit.
+    const notifPermission = ('Notification' in window) ? Notification.permission : 'denied';
+    alertsToggle.checked = notifPermission === 'granted' && localStorage.getItem('aura_alerts_enabled') === '1';
+    alertsToggle.addEventListener('change', async e => {
+      if(!e.target.checked){
+        localStorage.setItem('aura_alerts_enabled', '0');
+        return;
+      }
+      if('Notification' in window){
+        // requestPermission() only shows a prompt when permission is still
+        // 'default' (undecided) — once the user has granted or denied it,
+        // the browser remembers that choice and this resolves instantly
+        // without asking again.
+        const result = Notification.permission === 'default'
+          ? await Notification.requestPermission()
+          : Notification.permission;
+        if(result === 'granted'){
+          localStorage.setItem('aura_alerts_enabled', '1');
+        } else {
+          e.target.checked = false;
+          localStorage.setItem('aura_alerts_enabled', '0');
+        }
+      } else {
+        e.target.checked = false;
+      }
     });
 
     renderSavedCities();
@@ -565,6 +623,36 @@
       };
       reader.readAsDataURL(file);
     });
+
+    // Google sign-in doesn't collect age/native place, so this lets anyone
+    // (Google or email/guest accounts) fill those in themselves afterwards.
+    $('#account-edit-btn').addEventListener('click', () => {
+      const u = Auth.getUser() || {};
+      $('#account-age-input').value = u.age || '';
+      $('#account-place-input').value = u.place || '';
+      $('#account-age').classList.add('hidden');
+      $('#account-place').classList.add('hidden');
+      $('#account-age-input').classList.remove('hidden');
+      $('#account-place-input').classList.remove('hidden');
+      $('#account-edit-btn').classList.add('hidden');
+      $('#account-save-btn').classList.remove('hidden');
+    });
+
+    $('#account-save-btn').addEventListener('click', async () => {
+      try{
+        await Auth.updateProfile({
+          age: $('#account-age-input').value.trim(),
+          place: $('#account-place-input').value.trim()
+        });
+        hydrateAccount();
+        $('#account-age').classList.remove('hidden');
+        $('#account-place').classList.remove('hidden');
+        $('#account-age-input').classList.add('hidden');
+        $('#account-place-input').classList.add('hidden');
+        $('#account-save-btn').classList.add('hidden');
+        $('#account-edit-btn').classList.remove('hidden');
+      }catch(err){ alert(err.message); }
+    });
   }
 
   /* ---------------- BOOT ---------------- */
@@ -593,7 +681,7 @@
       setTimeout(() => {
         splash.style.display = 'none';
         if(Auth.isLoggedIn()){
-          $('#geo-modal').classList.remove('hidden');
+          showGeoModalOrResume();
         } else {
           $('#auth-screen').classList.remove('hidden');
         }
