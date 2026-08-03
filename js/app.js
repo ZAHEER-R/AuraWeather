@@ -74,7 +74,16 @@
     let inited = false;
     // Google's button is rendered at a fixed pixel width, so we size it to
     // whatever room the card actually has (instead of a hardcoded 336px,
-    // which overflowed narrow phone screens) and re-measure on resize.
+    // which overflowed narrow phone screens).
+    //
+    // IMPORTANT: this is called while #auth-screen is still display:none
+    // (waiting on the splash screen), so wrap.clientWidth reads 0 at that
+    // point and used to lock the button to the 336px fallback width
+    // forever — since a plain window "resize" event never fires just from
+    // toggling a hidden class. A ResizeObserver instead fires as soon as
+    // the wrap's real layout width becomes available (and on every
+    // orientation/viewport change after that), so the button is always
+    // sized to fit inside the card.
     const renderBtn = () => {
       if(!(window.google && google.accounts && google.accounts.id)){
         // GIS script hasn't loaded yet — retry shortly
@@ -89,19 +98,29 @@
         inited = true;
       }
       const wrap = $('#google-btn-real');
-      if(!wrap) return;
+      if(!wrap || !wrap.clientWidth) return; // not visible/measurable yet
       wrap.innerHTML = '';
-      const w = Math.max(220, Math.min(360, Math.floor(wrap.clientWidth) || 336));
+      const w = Math.max(220, Math.min(360, Math.floor(wrap.clientWidth)));
       google.accounts.id.renderButton(wrap, {
         theme: 'filled_white', size: 'large', shape: 'pill', width: w, text: 'continue_with'
       });
     };
     renderBtn();
-    let gBtnResizeTimer = null;
-    window.addEventListener('resize', () => {
-      clearTimeout(gBtnResizeTimer);
-      gBtnResizeTimer = setTimeout(renderBtn, 200);
-    });
+    const wrapEl = $('#google-btn-real');
+    if(wrapEl && 'ResizeObserver' in window){
+      let roTimer = null;
+      new ResizeObserver(() => {
+        clearTimeout(roTimer);
+        roTimer = setTimeout(renderBtn, 150);
+      }).observe(wrapEl);
+    } else {
+      // Fallback for browsers without ResizeObserver
+      let gBtnResizeTimer = null;
+      window.addEventListener('resize', () => {
+        clearTimeout(gBtnResizeTimer);
+        gBtnResizeTimer = setTimeout(renderBtn, 200);
+      });
+    }
   }
 
   const GEO_ASKED_KEY = 'aura_geo_asked';
