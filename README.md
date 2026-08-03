@@ -19,11 +19,6 @@ This folder is pre-configured for **GitHub Pages** static hosting.
     └── app.js
 ```
 
-## Deploy in 30 seconds
-1. Create a new GitHub repository.
-2. Upload **all files in this folder** to the repo (drag & drop).
-3. Go to **Settings → Pages → Source** and pick the branch you uploaded to.
-4. Your site goes live at `https://yourusername.github.io/repo-name/`.
 
 ## What works out of the box
 - **Weather, AQI, Search** — uses free Open-Meteo APIs (no key needed).
