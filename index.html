@@ -280,10 +280,20 @@
         <div class="account-fields">
           <div><span>Name</span><b id="account-name">--</b></div>
           <div><span>Email</span><b id="account-email">--</b></div>
-          <div><span>Age</span><b id="account-age">--</b></div>
-          <div><span>Native place</span><b id="account-place">--</b></div>
+          <div>
+            <span>Age</span>
+            <b id="account-age">--</b>
+            <input type="number" id="account-age-input" class="account-edit-input hidden" min="1" max="120" placeholder="Age">
+          </div>
+          <div>
+            <span>Native place</span>
+            <b id="account-place">--</b>
+            <input type="text" id="account-place-input" class="account-edit-input hidden" placeholder="Native place">
+          </div>
           <div><span>Login method</span><b id="account-login-method">Email</b></div>
         </div>
+        <button id="account-edit-btn" class="primary-btn">Edit</button>
+        <button id="account-save-btn" class="primary-btn hidden">Save</button>
         <button id="logout-btn" class="primary-btn danger">Log Out</button>
       </div>
     </section>
