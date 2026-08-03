@@ -136,8 +136,9 @@ body.light #scene-overlay{
   padding:12px; border-radius:12px; border:1px solid var(--glass-border);
   background:rgba(255,255,255,.9); color:#333; font-weight:600; cursor:pointer;
 }
-.google-real-wrap{ display:flex; justify-content:center; margin-bottom:2px; max-width:100%; overflow:hidden; }
+.google-real-wrap{ display:flex; justify-content:center; align-items:center; width:100%; max-width:100%; overflow:hidden; }
 .google-real-wrap > div{ max-width:100% !important; }
+.google-real-wrap iframe{ max-width:100% !important; }
 .email-auth-wrap{ margin-top:14px; }
 .skip-btn{ margin-top:10px; opacity:.85; }
 .auth-note{ font-size:11.5px; color:var(--text-dim); text-align:center; margin-top:16px; line-height:1.5; }
