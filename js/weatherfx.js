@@ -208,6 +208,12 @@ const WeatherFX = (() => {
 
   if(!raf) raf = requestAnimationFrame(loop);
 
+  // Show a real landscape straight away — previously #bg-image stayed
+  // empty (plain CSS gradient behind the login screen) until a place's
+  // weather loaded after sign-in, since that's the only place setMode()
+  // was called from.
+  setBackground('clear_day');
+
   // Map Open-Meteo WMO weather codes -> fx mode
   function modeFromWMO(code, isDayNight){
     let m = 'clear';
