@@ -60,18 +60,20 @@ const WeatherAPI = (() => {
       return SAMPLE_NEWS;
     }
     try{
-      // domains=cnn.com + q=weather keeps the feed on-topic and CNN-sourced,
-      // so each card's link opens the actual CNN article for that day.
+      // TheNewsAPI's /v1/news/all endpoint, filtered to weather-related
+      // search terms. Its free plan allows direct browser requests from
+      // any origin (unlike NewsAPI.org), and caps each response at 3
+      // articles — that's fine here since we just want a small feed.
       const params = new URLSearchParams({
-        q: topic, domains: 'cnn.com', language: 'en', sortBy: 'publishedAt',
-        pageSize: '12', apiKey: CONFIG.NEWS_API_KEY
+        search: topic, language: 'en', sort: 'published_at',
+        limit: '3', api_token: CONFIG.NEWS_API_KEY
       });
       const res = await fetch(`${CONFIG.NEWS_API_URL}?${params.toString()}`);
       const data = await res.json();
-      if(!data.articles || !data.articles.length) return SAMPLE_NEWS;
-      return data.articles.map(a => ({
+      if(!data.data || !data.data.length) return SAMPLE_NEWS;
+      return data.data.map(a => ({
         title: a.title, desc: a.description || '', url: a.url,
-        image: a.urlToImage, source: a.source?.name || 'CNN', time: a.publishedAt
+        image: a.image_url, source: a.source || 'News', time: a.published_at
       }));
     }catch(e){ return SAMPLE_NEWS; }
   }
