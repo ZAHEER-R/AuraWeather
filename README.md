@@ -1,5 +1,7 @@
 # Aura Weather — GitHub Pages Ready
 
+https://zaheer-r.github.io/AuraWeather
+
 This folder is pre-configured for **GitHub Pages** static hosting.
 
 ## Folder layout
