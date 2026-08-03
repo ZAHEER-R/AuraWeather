@@ -337,6 +337,12 @@ canvas{ display:block; max-width:100%; }
   font-weight:700; text-align:right; overflow-wrap:anywhere; word-break:break-word;
   max-width:65%;
 }
+.account-edit-input{
+  max-width:65%; text-align:right; font-weight:700; font-size:13.5px; font-family:inherit;
+  color:var(--text); background:rgba(255,255,255,.1); border:1px solid var(--glass-border);
+  border-radius:8px; padding:6px 10px;
+}
+.account-panel .primary-btn{ margin-top:10px; width:100%; }
 
 /* Tablets: give the card noticeably more breathing room */
 @media (min-width:640px){
