@@ -11,7 +11,12 @@ const CONFIG = {
   FORECAST_URL: "https://api.open-meteo.com/v1/forecast",
   AIR_QUALITY_URL: "https://air-quality-api.open-meteo.com/v1/air-quality",
 
-  // NewsAPI key — powers the live, weather-focused news feed (CNN-sourced)
+  // TheNewsAPI token — powers the live, weather-focused news feed.
+  // NOTE: NewsAPI.org's free "Developer" plan blocks all direct browser
+  // requests from any domain other than localhost (their CORS policy),
+  // so it can never work once deployed to GitHub Pages. TheNewsAPI's
+  // free plan allows direct browser requests from any origin, so it's
+  // used here instead.
   NEWS_API_KEY: "5nbkDgso5eOwAUH6U8DjPhdnmY4Wi1rOi2vqcXXj",
   NEWS_API_URL: "https://api.thenewsapi.com/v1/news/all",
 
