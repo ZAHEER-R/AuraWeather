@@ -1,0 +1,24 @@
+{
+  "name": "AuraWeather — AI Weather, Disaster, Health & Travel",
+  "short_name": "AuraWeather",
+  "description": "AI Life Assistant driven by weather, health, travel and safety intelligence",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
