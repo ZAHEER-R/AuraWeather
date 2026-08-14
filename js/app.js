@@ -62,7 +62,7 @@
     setTimeout(() => {
       const sp = $('#splash-screen');
       if (sp) { sp.classList.add('fade-out'); setTimeout(() => sp.classList.add('hidden'), 500); }
-    }, 7000);
+    }, 4000);
   }
 
   function showOnly(id) {
