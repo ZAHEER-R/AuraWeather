@@ -64,6 +64,7 @@ body {
   background: var(--bg);
   color: var(--text);
   overflow-x: hidden;
+  user-select: none;
 }
 
 /* Background video layer */
