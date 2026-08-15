@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#070d18">
+<meta name="description" content="AuraWeather — AI Weather, Disaster, Health & Travel Intelligence">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>AuraWeather</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="manifest" href="manifest.json">
+<script src="https://kit.fontawesome.com/efc246ce45.js" crossorigin="anonymous"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+<div id="bg-video-wrap" aria-hidden="true" style="display:none!important">
+  <video id="bg-video" muted loop playsinline poster=""></video>
+</div>
+<canvas id="fx-canvas"></canvas>
+<div id="scene-overlay"></div>
+<div id="bg-image" aria-hidden="true" style="position:fixed;inset:0;z-index:0;pointer-events:none;background-size:cover;background-position:center;opacity:0.35"></div>
+<div id="life-image" aria-hidden="true" style="position:fixed;inset:0;z-index:0;pointer-events:none;background-size:cover;opacity:0.2"></div>
+
+<!-- SPLASH -->
+<section id="splash-screen" class="splash-screen">
+  <svg class="splash-cloud" viewBox="0 0 140 90" width="100" height="64">
+    <path d="M35 70 Q10 70 10 48 Q10 28 30 26 Q34 8 56 8 Q78 8 84 24 Q106 24 108 44 Q110 62 90 66 Q70 70 35 70 Z"
+      fill="none" stroke="url(#cloudGrad)" stroke-width="4.5" stroke-linejoin="round"/>
+    <defs><linearGradient id="cloudGrad" x1="0" y1="0" x2="140" y2="90">
+      <stop stop-color="#8ec5ff"/><stop offset="1" stop-color="#c9a8ff"/>
+    </linearGradient></defs>
+  </svg>
+  <h1 class="splash-title">AuraWeather</h1>
+  <p class="splash-sub">AI Weather · Disaster · Health · Travel</p>
+  <svg class="splash-dial" viewBox="0 0 100 100" width="60" height="60">
+    <defs>
+      <linearGradient id="dialGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#8ec5ff"/>
+        <stop offset="100%" stop-color="#c9a8ff"/>
+      </linearGradient>
+    </defs>
+    <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(110,182,255,0.2)" stroke-width="3"/>
+    <circle cx="50" cy="50" r="45" fill="none" stroke="url(#dialGrad)" stroke-width="3" stroke-dasharray="70 200" stroke-linecap="round" class="dial-spinner"/>
+    <circle cx="50" cy="50" r="6" fill="url(#dialGrad)"/>
+  </svg>
+  <div class="splash-team">
+    Developed by the AuraWeather Team<br>
+    <strong>Prof. Senthil Kumar P</strong> · <strong>Zaheer R</strong><br>
+    <strong>Lakshmanan</strong> · <strong>Sanjay Gupta</strong>
+  </div>
+</section>
+
+<!-- AUTH -->
+<section id="auth-screen" class="auth-screen hidden">
+  <div class="glass auth-card">
+    <div class="auth-logo">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M17.5 19H6.5A4.5 4.5 0 1 1 7.64 10.06 6 6 0 0 1 19 12.5a3.5 3.5 0 0 1-1.5 6.5Z" stroke="url(#g1)" stroke-width="1.6"/><defs><linearGradient id="g1" x1="0" y1="0" x2="24" y2="24"><stop stop-color="#8ec5ff"/><stop offset="1" stop-color="#c9a8ff"/></linearGradient></defs></svg>
+      <h1>AuraWeather</h1>
+    </div>
+    <p class="auth-sub">AI-powered weather, disaster, health &amp; travel intelligence.</p>
+    <div id="google-btn-real" class="google-real-wrap"></div>
+    <button type="button" id="google-fallback-btn" class="google-btn hidden" style="display:none;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px;border-radius:999px;border:1px solid var(--border);background:#fff;color:#333;font-weight:600;cursor:pointer;margin-bottom:4px">
+      <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.56 2.7-3.87 2.7-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.36 0-4.35-1.6-5.07-3.74H.9v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.93 10.68A5.4 5.4 0 0 1 3.65 9c0-.58.1-1.15.28-1.68V4.99H.9A9 9 0 0 0 0 9c0 1.45.35 2.83.9 4.01l3.03-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .9 4.99l3.03 2.33C4.65 5.18 6.64 3.58 9 3.58z"/></svg>
+      Continue with Google
+    </button>
+    <div class="divider"><span>or use email</span></div>
+    <button type="button" id="email-toggle-btn" class="ghost-btn">Log in or sign up with email</button>
+    <div id="email-auth-wrap" class="email-auth-wrap hidden">
+      <div class="auth-tabs">
+        <button type="button" class="tab-btn active" data-tab="login">Log In</button>
+        <button type="button" class="tab-btn" data-tab="signup">Sign Up</button>
+      </div>
+      <form id="login-form" class="auth-form active" autocomplete="on">
+        <input type="email" id="login-email" placeholder="Email address" required autocomplete="email">
+        <input type="password" id="login-password" placeholder="Password" required autocomplete="current-password">
+        <button type="submit" class="primary-btn">Log In</button>
+        <button type="button" id="forgot-open-btn" class="link-btn">Forgot password?</button>
+        <p class="form-msg" id="login-msg"></p>
+      </form>
+      <form id="signup-form" class="auth-form" autocomplete="on">
+        <input type="text" id="signup-name" placeholder="Full name" required>
+        <input type="email" id="signup-email" placeholder="Email address" required>
+        <input type="password" id="signup-password" placeholder="Password (min 6 chars)" required minlength="6">
+        <button type="submit" class="primary-btn">Create Account</button>
+        <p class="form-msg" id="signup-msg"></p>
+      </form>
+      <div id="forgot-wrap" class="forgot-wrap hidden">
+        <h3>Reset password</h3>
+        <input type="email" id="forgot-email" placeholder="Registered email">
+        <button type="button" id="forgot-request-btn" class="primary-btn">Send OTP</button>
+        <div id="forgot-step2" class="hidden">
+          <input type="text" id="forgot-otp" placeholder="6-digit OTP" inputmode="numeric" autocomplete="one-time-code">
+          <input type="password" id="forgot-newpass" placeholder="New password" minlength="6">
+          <button type="button" id="forgot-reset-btn" class="primary-btn">Update password</button>
+        </div>
+        <p class="form-msg" id="forgot-msg"></p>
+        <p class="auth-note">V1: OTP is shown here for demo. V2 delivers OTP by email / FCM push.</p>
+      </div>
+    </div>
+    <button type="button" id="skip-btn" class="ghost-btn skip-btn">Skip sign up for now →</button>
+    <p class="auth-note">Location access is requested after you enter the app.</p>
+  </div>
+</section>
+
+<!-- HEALTH ONBOARD (after login) -->
+<section id="onboard-modal" class="onboard-modal hidden">
+  <div class="glass onboard-card">
+    <h2>Health profile</h2>
+    <p class="lead">Required once after sign-in for personalised clothing &amp; health alerts. Stored only on this device (V1).</p>
+    <div class="health-form" id="onboard-form">
+      <label class="field"><span>Age</span><input type="number" id="ob-age" min="1" max="120" placeholder="Age" required></label>
+      <label class="field"><span>Height (cm)</span><input type="number" id="ob-height" min="50" max="250" placeholder="Height in cm" required></label>
+      <label class="field"><span>Weight (kg)</span><input type="number" id="ob-weight" min="20" max="300" step="0.1" placeholder="Weight in kg" required></label>
+      <label class="field"><span>Activity level</span>
+        <select id="ob-activity">
+          <option value="low">Low</option>
+          <option value="moderate" selected>Moderate</option>
+          <option value="high">High</option>
+        </select>
+      </label>
+      <fieldset>
+        <legend>Conditions</legend>
+        <div class="chk-grid" id="ob-conditions">
+          <label class="chk"><input type="checkbox" value="asthma"><span class="box"></span><span class="lbl">Asthma</span></label>
+          <label class="chk"><input type="checkbox" value="allergies"><span class="box"></span><span class="lbl">Allergies</span></label>
+          <label class="chk"><input type="checkbox" value="migraine"><span class="box"></span><span class="lbl">Migraine</span></label>
+          <label class="chk"><input type="checkbox" value="heart"><span class="box"></span><span class="lbl">Heart disease</span></label>
+          <label class="chk"><input type="checkbox" value="diabetes"><span class="box"></span><span class="lbl">Diabetes</span></label>
+          <label class="chk"><input type="checkbox" value="hypertension"><span class="box"></span><span class="lbl">High BP</span></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Sensitivities</legend>
+        <div class="chk-grid" id="ob-sens">
+          <label class="chk"><input type="checkbox" value="uv"><span class="box"></span><span class="lbl">High UV</span></label>
+          <label class="chk"><input type="checkbox" value="heat"><span class="box"></span><span class="lbl">Heat</span></label>
+          <label class="chk"><input type="checkbox" value="cold"><span class="box"></span><span class="lbl">Cold</span></label>
+          <label class="chk"><input type="checkbox" value="pollen"><span class="box"></span><span class="lbl">Pollen</span></label>
+          <label class="chk"><input type="checkbox" value="dust"><span class="box"></span><span class="lbl">Dust</span></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Fitness</legend>
+        <div class="chk-grid" id="ob-fit">
+          <label class="chk"><input type="checkbox" value="walking"><span class="box"></span><span class="lbl">Walking</span></label>
+          <label class="chk"><input type="checkbox" value="running"><span class="box"></span><span class="lbl">Running</span></label>
+          <label class="chk"><input type="checkbox" value="cycling"><span class="box"></span><span class="lbl">Cycling</span></label>
+          <label class="chk"><input type="checkbox" value="hiking"><span class="box"></span><span class="lbl">Hiking</span></label>
+        </div>
+      </fieldset>
+      <button type="button" id="onboard-save-btn" class="primary-btn">Continue to AuraWeather</button>
+      <p class="form-msg" id="onboard-msg"></p>
+    </div>
+  </div>
+</section>
+
+<!-- GEO -->
+<section id="geo-modal" class="geo-modal hidden">
+  <div class="glass geo-card">
+    <div class="geo-icon" style="font-size:2rem;margin-bottom:8px"><i class="fas fa-map-pin" style="font-size: 48px; color: rgb(246, 240, 240);"></i></div>
+    <h2>Enable your local sky</h2>
+    <p>AuraWeather uses GPS for live conditions, disaster risk and alerts for your area.</p>
+    <button type="button" id="geo-allow" class="primary-btn">Allow Location Access</button>
+    <button type="button" id="geo-skip" class="ghost-btn">Search manually instead</button>
+  </div>
+</section>
+
+<!-- APP -->
+<div id="app" class="app hidden">
+  <header class="topbar glass">
+    <div class="brand">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M17.5 19H6.5A4.5 4.5 0 1 1 7.64 10.06 6 6 0 0 1 19 12.5a3.5 3.5 0 0 1-1.5 6.5Z" stroke="#cfe6ff" stroke-width="1.6"/></svg>
+      <span>AuraWeather</span>
+    </div>
+    <div class="search-wrap">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="search-input" type="search" placeholder="City, area, landmark…" autocomplete="off" enterkeyhint="search">
+      <button type="button" id="search-clear" class="search-clear hidden" aria-label="Clear">✕</button>
+      <div id="search-suggestions" class="search-suggestions hidden" role="listbox"></div>
+    </div>
+    <nav class="tabbar" id="tabbar" aria-label="Main">
+      <button type="button" class="nav-btn active" data-view="home">Home</button>
+      <button type="button" class="nav-btn" data-view="personal">Personal</button>
+      <button type="button" class="nav-btn" data-view="news">News</button>
+      <button type="button" class="nav-btn" data-view="profile">Profile</button>
+    </nav>
+  </header>
+
+  <main class="content">
+    <!-- HOME -->
+    <section id="view-home" class="view active">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+        <div id="places-strip" class="places-strip" aria-label="Saved places" style="flex:1;margin:0"></div>
+        <button type="button" id="clear-places-btn" class="btn-clear-places" title="Clear all saved places">Clear all</button>
+      </div>
+      <div class="hero glass">
+        <div class="hero-left">
+          <div class="hero-place" id="place-name">Locating…</div>
+          <div class="local-time-badge" id="local-time-badge"><i class="fa-regular fa-clock"></i> <span id="local-time-text">--:--</span></div>
+          <div class="hero-temp" id="hero-temp">--°</div>
+          <div class="hero-cond" id="hero-cond">Fetching sky…</div>
+          <div class="hero-minmax"><span id="hero-max">H: --°</span> · <span id="hero-min">L: --°</span> · <span id="hero-feels">Feels --°</span></div>
+          <div class="hero-updated" id="hero-updated">Updated --:--</div>
+          <div class="hero-actions">
+            <button type="button" id="save-city-btn" class="chip-btn">＋ Save place</button>
+            <button type="button" id="use-gps-btn" class="chip-btn">📍 Use GPS</button>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="comfort-score glass-inner">
+            <div class="comfort-ring">
+              <svg viewBox="0 0 120 120" width="110" height="110">
+                <circle cx="60" cy="60" r="52" stroke="rgba(255,255,255,.15)" stroke-width="10" fill="none"/>
+                <circle id="comfort-arc" cx="60" cy="60" r="52" stroke="url(#cg)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7" transform="rotate(-90 60 60)"/>
+                <defs><linearGradient id="cg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7ee8b8"/><stop offset="1" stop-color="#5aa9ff"/></linearGradient></defs>
+              </svg>
+              <div class="comfort-num" id="comfort-num">--</div>
+            </div>
+            <div class="comfort-label">Go‑Outside Score™</div>
+            <div class="comfort-sub" id="comfort-sub">Temp, humidity, wind &amp; AQI</div>
+          </div>
+        </div>
+      </div>
+      <div class="row-stats">
+        <div class="stat-chip glass-inner"><span><i class="fa-solid fa-droplet"></i> Humidity</span><b id="stat-humidity">--%</b></div>
+        <div class="stat-chip glass-inner"><span><i class="fa-solid fa-wind"></i> Wind</span><b id="stat-wind">--</b></div>
+        <div class="stat-chip glass-inner"><span><i class="fa-solid fa-sun"></i> UV</span><b id="stat-uv">--</b></div>
+        <div class="stat-chip glass-inner"><span><i class="fa-solid fa-eye"></i> Visibility</span><b id="stat-visibility">--</b></div>
+        <div class="stat-chip glass-inner"><span><i class="fa-solid fa-gauge"></i> Pressure</span><b id="stat-pressure">--</b></div>
+        <div class="stat-chip glass-inner"><span><i class="fa-solid fa-smog"></i> AQI</span><b id="stat-aqi">--</b></div>
+      </div>
+      <div class="home-grid">
+        <!-- Weather Charts -->
+        <div class="panel glass home-span-8">
+          <div class="panel-head">
+            <h3>Weather Charts</h3>
+            <span class="panel-sub">24-hour forecast</span>
+          </div>
+          <div class="chart-tabs" id="chart-tabs">
+            <button type="button" class="chart-tab active" data-chart="temp">🌡 Temperature</button>
+            <button type="button" class="chart-tab" data-chart="rain">🌧 Rain %</button>
+            <button type="button" class="chart-tab" data-chart="uv">☀ UV Index</button>
+            <button type="button" class="chart-tab" data-chart="wind">💨 Wind</button>
+          </div>
+          <div class="chart-canvas-wrap">
+            <svg id="weather-chart-svg" viewBox="0 0 640 240" preserveAspectRatio="xMidYMid meet" aria-label="24-hour weather chart"></svg>
+            <div id="chart-tooltip" class="chart-tooltip hidden" role="tooltip"></div>
+          </div>
+          <div class="chart-source muted">Source: Open-Meteo · Forecast</div>
+        </div>
+
+        <!-- Air Quality -->
+        <div class="panel glass aqi-card home-span-4" id="aqi-panel" role="region" aria-label="Air quality">
+          <div class="panel-head"><h3>Air Quality</h3><span class="panel-sub">US AQI</span></div>
+          <div id="aqi-detail">
+            <div class="chart-empty" aria-live="polite">Loading AQI…</div>
+          </div>
+        </div>
+
+        <!-- 24-Hour Timeline bars -->
+        <div class="panel glass home-span-12">
+          <div class="panel-head"><h3>24‑Hour Timeline</h3></div>
+          <div id="hourly-bars" class="hourly-bars"></div>
+        </div>
+
+        <!-- 10-Day Forecast -->
+        <div class="panel glass home-span-7">
+          <div class="panel-head"><h3>10‑Day Forecast</h3><span class="panel-sub">Source: Open-Meteo</span></div>
+          <div id="daily-list" class="daily-list"></div>
+        </div>
+
+        <!-- Sun & Moon -->
+        <div class="panel glass home-span-5">
+          <div class="panel-head"><h3>Sun &amp; Moon</h3></div>
+          <div class="sunmoon-dual">
+            <div class="arc-block">
+              <h4>☀️ Sun path</h4>
+              <div class="arc-svg-wrap">
+                <svg id="sun-arc-svg" viewBox="0 0 200 100" aria-hidden="true">
+                  <path d="M10 90 A90 90 0 0 1 190 90" fill="none" stroke="rgba(255,200,80,0.25)" stroke-width="5"/>
+                  <circle id="sun-dot" cx="10" cy="90" r="8" fill="#ffc857"/>
+                </svg>
+              </div>
+              <div class="arc-times"><span id="sunrise-time">--</span><span id="sunset-time">--</span></div>
+              <div class="arc-now" id="sun-now-label">Sunrise → Sunset</div>
+            </div>
+            <div class="arc-block">
+              <h4>🌙 Moon path</h4>
+              <div class="arc-svg-wrap">
+                <svg id="moon-arc-svg" viewBox="0 0 200 100" aria-hidden="true">
+                  <path d="M10 90 A90 90 0 0 1 190 90" fill="none" stroke="rgba(180,200,255,0.3)" stroke-width="5"/>
+                  <circle id="moon-dot" cx="10" cy="90" r="7" fill="#cfe0ff"/>
+                </svg>
+              </div>
+              <div class="arc-times"><span id="moonrise-time">--</span><span id="moonset-time">--</span></div>
+              <div class="arc-now" id="moon-now-label">Moonrise → Moonset</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PERSONAL = Intel + Travel -->
+    <section id="view-personal" class="view">
+      <div class="personal-grid">
+        <div id="personal-login-prompt" class="panel glass home-span-12 personal-login-prompt hidden">
+          <div class="personal-login-prompt-inner">
+            <i class="fa-solid fa-lock"></i>
+            <p>Login to get <b>health intelligence</b>, <b>clothing recommendations</b> &amp; <b>AI daily planner</b></p>
+          </div>
+        </div>
+        <div id="panel-daily-plan" class="panel glass home-span-7 personal-gated">
+          <div class="panel-head"><h3>AI Daily Planner</h3><span class="panel-sub">Weather-aware</span></div>
+          <div id="daily-plan-list"></div>
+        </div>
+        <div id="panel-clothing" class="panel glass home-span-5 personal-gated">
+          <div class="panel-head"><h3>Clothing recommendation</h3></div>
+          <div id="clothing-list"></div>
+        </div>
+        <div id="panel-health" class="panel glass home-span-5 personal-gated">
+          <div class="panel-head"><h3>Health intelligence</h3><span class="panel-sub">Weather + your profile</span></div>
+          <div id="health-alerts-list"></div>
+        </div>
+        <div id="panel-travel" class="panel glass home-span-7">
+          <div class="panel-head"><h3>Traveller safety</h3></div>
+          <div class="travel-hero">
+            <h4 id="travel-dest-name">—</h4>
+            <p id="travel-dest-wx" class="muted">—</p>
+          </div>
+          <h4 style="font-size:0.95rem;margin:12px 0 6px">Packing checklist (this place)</h4>
+          <div id="travel-pack-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEWS = Disaster top + articles -->
+    <section id="view-news" class="view">
+      <div class="news-grid">
+        <div class="panel glass home-span-5">
+          <div class="panel-head"><h3>Disaster risk · this place</h3>
+            <span class="panel-sub">Heuristic · verify with official agencies</span></div>
+          <div id="disaster-list"></div>
+        </div>
+        <div class="panel glass home-span-7">
+          <div class="panel-head"><h3>Weather &amp; climate news</h3><span class="panel-sub" id="news-status">Live feed</span></div>
+          <div id="news-list" class="news-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section id="view-profile" class="view">
+      <div class="panel glass account-panel">
+        <div class="account-photo-wrap">
+          <img id="account-photo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%235aa9ff'/%3E%3Cstop offset='1' stop-color='%238b6cff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='60' cy='60' r='60' fill='url(%23g)'/%3E%3Ccircle cx='60' cy='46' r='22' fill='rgba(255,255,255,0.92)'/%3E%3Cellipse cx='60' cy='98' rx='36' ry='28' fill='rgba(255,255,255,0.92)'/%3E%3C/svg%3E" alt="Profile" data-default="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%235aa9ff'/%3E%3Cstop offset='1' stop-color='%238b6cff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='60' cy='60' r='60' fill='url(%23g)'/%3E%3Ccircle cx='60' cy='46' r='22' fill='rgba(255,255,255,0.92)'/%3E%3Cellipse cx='60' cy='98' rx='36' ry='28' fill='rgba(255,255,255,0.92)'/%3E%3C/svg%3E">
+          <label class="photo-upload-btn">Change photo<input type="file" id="photo-input" accept="image/*" hidden></label>
+        </div>
+        <div class="account-fields">
+          <div class="account-name-row">
+            <span>Name</span>
+            <div class="name-edit-wrap">
+              <b id="account-name">--</b>
+              <input type="text" id="account-name-input" class="account-edit-input hidden" maxlength="60" placeholder="Your name">
+              <button type="button" id="edit-name-btn" class="chip-btn name-edit-btn" title="Edit name">Edit</button>
+              <button type="button" id="save-name-btn" class="chip-btn name-save-btn hidden" title="Save name">Save</button>
+            </div>
+          </div>
+          <div><span>Email</span><b id="account-email" class="email-locked">--</b></div>
+          <div><span>Login</span><b id="account-login-method">—</b></div>
+        </div>
+      </div>
+      <div class="panel glass">
+        <div class="panel-head">
+          <h3>Saved places</h3>
+          <button type="button" id="clear-saved-btn" class="btn-clear-places">Clear all</button>
+        </div>
+        <div id="saved-cities" class="saved-cities collapsed"></div>
+        <button type="button" id="saved-see-more" class="btn-clear-places see-more-btn" style="margin-top:8px;display:none">See more</button>
+      </div>
+      <div class="panel glass health-profile-panel" id="health-profile-panel">
+        <div class="panel-head health-profile-head">
+          <h3>Health profile</h3>
+          <span class="panel-sub">Edit anytime</span>
+          <button type="button" id="health-edit-btn" class="chip-btn health-edit-btn">Edit</button>
+        </div>
+        <div class="health-summary" id="health-summary">
+          <p class="muted">Tap <b>Edit</b> to open your full health profile.</p>
+        </div>
+        <div class="health-form health-form-collapsed" id="profile-health-form">
+          <label class="field"><span>Age</span><input type="number" id="ph-age" min="1" max="120"></label>
+          <label class="field"><span>Height (cm)</span><input type="number" id="ph-height" min="50" max="250"></label>
+          <label class="field"><span>Weight (kg)</span><input type="number" id="ph-weight" min="20" max="300" step="0.1"></label>
+          <label class="field"><span>Activity</span>
+            <select id="ph-activity">
+              <option value="low">Low</option>
+              <option value="moderate">Moderate</option>
+              <option value="high">High</option>
+            </select>
+          </label>
+          <fieldset>
+            <legend>Conditions</legend>
+            <div class="chk-grid" id="ph-conditions">
+              <label class="chk"><input type="checkbox" value="asthma"><span class="box"></span><span class="lbl">Asthma</span></label>
+              <label class="chk"><input type="checkbox" value="allergies"><span class="box"></span><span class="lbl">Allergies</span></label>
+              <label class="chk"><input type="checkbox" value="migraine"><span class="box"></span><span class="lbl">Migraine</span></label>
+              <label class="chk"><input type="checkbox" value="heart"><span class="box"></span><span class="lbl">Heart disease</span></label>
+              <label class="chk"><input type="checkbox" value="diabetes"><span class="box"></span><span class="lbl">Diabetes</span></label>
+              <label class="chk"><input type="checkbox" value="hypertension"><span class="box"></span><span class="lbl">High BP</span></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Sensitivities</legend>
+            <div class="chk-grid" id="ph-sens">
+              <label class="chk"><input type="checkbox" value="uv"><span class="box"></span><span class="lbl">High UV</span></label>
+              <label class="chk"><input type="checkbox" value="heat"><span class="box"></span><span class="lbl">Heat</span></label>
+              <label class="chk"><input type="checkbox" value="cold"><span class="box"></span><span class="lbl">Cold</span></label>
+              <label class="chk"><input type="checkbox" value="pollen"><span class="box"></span><span class="lbl">Pollen</span></label>
+              <label class="chk"><input type="checkbox" value="dust"><span class="box"></span><span class="lbl">Dust</span></label>
+            </div>
+          </fieldset>
+          <button type="button" id="health-save-btn" class="primary-btn">Save health profile</button>
+        </div>
+      </div>
+      <div class="panel glass settings-panel">
+        <div class="panel-head"><h3>Settings</h3></div>
+        <div class="settings-row">
+          <div><b>Theme</b><p>Light / dark</p></div>
+          <label class="switch"><input type="checkbox" id="theme-toggle"><span class="slider"></span></label>
+        </div>
+        <div class="settings-row">
+          <div><b>Units</b></div>
+          <select id="unit-select">
+            <option value="celsius">°C</option>
+            <option value="fahrenheit">°F</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <div><b>Push notifications</b><p>Browser permission (mobile &amp; tablet)</p></div>
+          <label class="switch"><input type="checkbox" id="alerts-toggle"><span class="slider"></span></label>
+        </div>
+        <p id="notif-status" class="muted" style="padding:0 4px 8px"></p>
+        <div class="settings-row"><div><b>News alerts</b></div>
+          <label class="switch"><input type="checkbox" id="newsAlerts-toggle" checked><span class="slider"></span></label></div>
+        <div class="settings-row"><div><b>Weather alerts</b></div>
+          <label class="switch"><input type="checkbox" id="weatherAlerts-toggle" checked><span class="slider"></span></label></div>
+        <div class="settings-row"><div><b>Disaster alerts</b></div>
+          <label class="switch"><input type="checkbox" id="disasterAlerts-toggle" checked><span class="slider"></span></label></div>
+        <div class="settings-row"><div><b>Personal alerts</b><p>Health &amp; clothing tips</p></div>
+          <label class="switch"><input type="checkbox" id="personalAlerts-toggle" checked><span class="slider"></span></label></div>
+      </div>
+      <div class="panel glass">
+        <div class="panel-head"><h3>Login history</h3></div>
+        <div id="login-history-list"></div>
+        <button type="button" id="logout-btn" class="primary-btn danger" style="margin-top:14px">Log Out</button>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Mobile">
+    <button type="button" class="bottom-nav-btn active" data-view="home"><i class="fa-solid fa-house"></i><span>Home</span></button>
+    <button type="button" class="bottom-nav-btn" data-view="personal"><i class="fa-solid fa-suitcase-medical"></i><span>Personal</span></button>
+    <button type="button" class="bottom-nav-btn" data-view="news"><i class="fa-solid fa-newspaper"></i><span>News</span></button>
+    <button type="button" class="bottom-nav-btn" data-view="profile"><i class="fa-solid fa-user"></i><span>Profile</span></button>
+  </nav>
+</div>
+
+<div id="fixed-tip" class="fixed-tip">
+  <span>💡 Suggestions appear as you type — pick a place from the list (no need to press Enter).</span>
+  <button type="button" id="tip-close" aria-label="Dismiss">✕</button>
+</div>
+<div id="toast" class="toast" role="status"></div>
+
+<!-- Core app: classic scripts (order matters). Must NOT be type=module or boot breaks. -->
+<script src="js/config.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/cartoon.js"></script>
+<script src="js/weatherfx.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/intelligence.js"></script>
+<script src="js/notifications.js"></script>
+<script src="js/app.js"></script>
+
+<!-- Supabase is optional: load after app so splash/login always work even if cloud fails -->
+<script type="module">
+  try {
+    const { SUPABASE_URL, SUPABASE_ANON_KEY, VAPID_PUBLIC_KEY } = await import('./js/supabase-config.js');
+    const { default: SupabaseService } = await import('./js/supabase-service.js');
+    if (SUPABASE_URL && SUPABASE_ANON_KEY && !SUPABASE_URL.includes('YOUR_')) {
+      const ok = SupabaseService.init(SUPABASE_URL, SUPABASE_ANON_KEY);
+      window.SupabaseService = SupabaseService;
+      console.log('Supabase init:', ok ? 'ok' : 'failed');
+      try {
+        const { default: NotificationManager } = await import('./js/notification-manager.js');
+        NotificationManager.init(VAPID_PUBLIC_KEY);
+        window.NotificationManager = NotificationManager;
+      } catch (e) {
+        console.warn('NotificationManager optional load failed', e);
+      }
+    } else {
+      console.warn('Supabase keys missing — running local-only mode');
+    }
+  } catch (e) {
+    console.warn('Supabase optional load failed — app continues local-only', e);
+  }
+</script>
+
+</body>
+</html>
