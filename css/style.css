@@ -608,6 +608,10 @@ body {
 }
 
 @media (max-width: 900px) {
+   body {
+  -webkit-user-select: none;
+  user-select: none;
+  }
   .tabbar { display: none; }
   .bottom-nav { display: flex; }
   .content { padding-bottom: 88px; }
@@ -638,6 +642,10 @@ body {
 }
 @media (min-width: 901px) {
   .fixed-tip { bottom: 20px; max-width: 520px; left: 50%; right: auto; transform: translateX(-50%); }
+   body {
+  -webkit-user-select: none;
+  user-select: none;
+  }
 }
 
 .onboard-card { text-align: left; max-height: 90vh; overflow-y: auto; }
@@ -727,6 +735,10 @@ body {
   gap: 16px;
 }
 @media (max-width: 560px) {
+   body {
+  -webkit-user-select: none;
+  user-select: none;
+  }
   .sunmoon-dual { grid-template-columns: 1fr; }
 }
 .arc-block {
@@ -874,6 +886,10 @@ body {
 
 /* Narrow selects on mobile */
 @media (max-width: 600px) {
+   body {
+  -webkit-user-select: none;
+  user-select: none;
+  }
   .settings-row select,
   .health-form select,
   #unit-select,
@@ -908,6 +924,10 @@ body {
   min-height: 48px;
 }
 @media (max-width: 480px) {
+   body {
+  -webkit-user-select: none;
+  user-select: none;
+  }
   .auth-card {
     padding-left: 18px;
     padding-right: 18px;
@@ -946,6 +966,10 @@ body {
   .home-span-4 { grid-column: span 5; }
   .home-span-7 { grid-column: span 7; }
   .home-span-5 { grid-column: span 5; }
+   body {
+  -webkit-user-select: none;
+  user-select: none;
+  }
 }
 
 /* ---- Weather Charts ---- */
@@ -1216,6 +1240,10 @@ body {
 }
 
 @media (max-width: 640px) {
+   body {
+  -webkit-user-select: none;
+  user-select: none;
+  }
   .hour-col { flex: 0 0 64px; padding: 10px 4px; }
   .h-bar-container { width: 24px; height: 64px; }
   .h-time { font-size: 0.65rem; }
@@ -1439,6 +1467,10 @@ body {
   display: none !important;
 }
 @media (max-width: 960px) {
+   body {
+  -webkit-user-select: none;
+  user-select: none;
+  }
   .personal-grid .home-span-7,
   .personal-grid .home-span-5,
   .personal-grid .home-span-12,
