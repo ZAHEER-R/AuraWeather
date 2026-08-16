@@ -82,6 +82,8 @@ public/sw.js            Service worker
    npx serve .
    # or
    python -m http.server 8080
+   #or
+   use LiveServer
 
    Mode,Personal intelligence,Health profile edit
 Guest,Traveller safety only,Prompt to sign in
