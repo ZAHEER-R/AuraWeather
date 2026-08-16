@@ -1,63 +1,96 @@
-# AuraWeather — AI Weather, Disaster, Health & Travel Intelligence
+# AuraWeather v4.1
 
-**Live:** https://zaheer-r.github.io/AuraWeather
+**Handle Environment at your comfort**
 
-Production-oriented **local-first (V1)** Progressive Web App with clean hooks for **V2 backend + Firebase Cloud Messaging**.
+AuraWeather is a personal weather & life-intelligence web app: live conditions, radar-style maps, place-aware news, health & clothing guidance, travel safety, and optional sign-in — all in a responsive PWA UI (light / dark).
 
-## What is included (V1)
+---
 
-- Modern glass UI, dark/light theme, responsive mobile + tablet layouts, bottom nav on small screens
-- Open-Meteo weather, AQI, geocoding (no API key)
-- News via TheNewsAPI with graceful sample fallback
-- Email signup/login + Google Sign-In (GIS) + **Skip for now**
-- **Forgot password** with OTP verification (demo OTP on-screen/console in V1; wire email/FCM in V2)
-- Profile, photo, settings, saved cities, search history, login history — all **localStorage**
-- Notification toggle that **requests permission** (works on mobile/tablet browsers that support the Notification API)
-- **Intel** module: clothing recommendations, health alerts (profile-aware), AI daily planner
-- **Disaster** risk intelligence (heuristic levels + safety guidance; clearly labelled non-official)
-- **Travel** assistant: packing checklist, saved destinations
-- Optional health profile for personalization
-- PWA manifest for Add to Home Screen
+## What's new in v4.1
 
-## Architecture
+| Area | Highlights |
+|------|------------|
+| **Auth & access** | Guest vs signed-in gating for Health Intelligence, Clothing, AI Daily Planner; health profile edit only after real sign-in |
+| **Search & places** | Icon-only search that expands; recent history in the search panel; **Save place** is explicit (no auto-save); left **☰ menu** drawer for saved places |
+| **Maps** | Locked OpenWeatherMap color layers (Temperature, Radar/Rain, Pressure, Wind, Clouds) with scale legend; no pan/zoom; updates with selected place |
+| **News** | Today Highlights carousel (4 stories + CTA) with dots & **‹ ›** controls; full News feed refreshed for the **selected place** |
+| **Alerts** | Weather, personal, and travel-safety style alerts for current + **saved locations** (browser notifications when enabled) |
+| **UX / theme** | Light-theme contrast fixes; Sun & Moon path layout; install / Add to Home Screen prompts; Google button overflow fixes |
 
-```
-index.html          App shell + views
-css/style.css       Theme + responsive layout
-js/config.js        API endpoints, Google client, Firebase placeholders
-js/storage.js       Local persistence layer (swap/sync in V2)
-js/api.js           Open-Meteo + news
-js/auth.js          Local SHA-256 accounts + Google + OTP reset
-js/intelligence.js  Clothing / health / disaster / planner heuristics
-js/notifications.js Browser notifications + FCM registration stub
-js/app.js           UI controller
-js/weatherfx.js     Background weather effects
-js/cartoon.js       Visual helpers
-manifest.json       PWA
-```
+---
 
-## V2 roadmap (backend)
+## Features
 
-1. Set CONFIG.BACKEND_URL and implement /api/signup|login|profile|history with a real DBMS.
-2. Fill CONFIG.FIREBASE and implement FCM token registration in notifications.js for:
-   - news push
-   - current-location weather alerts
-   - forgot-password OTP delivery
-3. Never put server secrets or private keys in client code.
+### Home
+- Current conditions, Go-Outside Score™, humidity / wind / UV / visibility / pressure / AQI
+- **Today Highlights** — rotating local-ish weather & climate headlines
+- **Radar and maps** — continuous OWM weather color fields over the region
+- 24-hour charts (temp, rain %, UV, wind) and 10-day forecast
+- Sun & Moon path arcs
+- Explicit **Save place** + **Use GPS**
 
-## Deploy (GitHub Pages)
+### Personal
+- **Traveller safety** — available to guests and signed-in users
+- **Health Intelligence · Clothing recommendations · AI Daily Planner** — after email or Google sign-in (not for pure guest)
 
-```bash
-git clone https://github.com/ZAHEER-R/AuraWeather.git
-cd AuraWeather
-# copy enhanced files, then:
+### News
+- Thumbnails, sources, 24/7 refresh cadence
+- Queries biased to the city / region / country you selected
+
+### Profile
+- Account, health profile (signed-in), settings (theme, units, alerts)
+- Search history (saved places live in the header drawer)
+
+---
+
+## Stack
+
+| Layer | Choice |
+|-------|--------|
+| UI | HTML / CSS / vanilla JS (no build step required) |
+| Weather | Open-Meteo (forecast + air quality) |
+| Geocoding | Open-Meteo Geocoding + Nominatim reverse |
+| Map tiles | OSM / CARTO basemap + OpenWeatherMap weather layers |
+| News | TheNewsAPI |
+| Auth | Local accounts + Google Identity Services; optional Supabase / Firebase |
+| Storage | localStorage first; optional cloud sync stubs |
+| PWA | manifest.json + service worker |
+
+
+index.html              App shell, views, drawers, install banner
+css/style.css           Themes, responsive layout, map & carousel
+js/config.js            API keys, endpoints, feature flags
+js/api.js               Forecast, AQI, geocode, place-aware news
+js/app.js               UI controller (search, map, highlights, alerts)
+js/auth.js              Sign-in / sign-up / Google / guest
+js/intelligence.js      Clothing, health, planner, travel heuristics
+js/notifications.js     Browser notifications + alert helpers
+js/storage.js           Settings, saved cities, search history
+js/weatherfx.js         Background weather visuals
+manifest.json           PWA
+public/sw.js            Service worker
+
+
+---
+
+## Quick start
+
+1. Unzip / clone the project.
+2. Serve over **HTTP(S)** (not `file://`):
+
+   ```bash
+   npx serve .
+   # or
+   python -m http.server 8080
+
+   Mode,Personal intelligence,Health profile edit
+Guest,Traveller safety only,Prompt to sign in
+Email / Google sign-in,"Full (health, clothing, planner)",Yes
+
 git add -A
-git commit -m "AuraWeather V1: intel, disaster, travel, OTP, notifications"
-git push origin main
-```
+git commit -m "AuraWeather v4.1"
+git tag v4.1
+git push origin main --tags
+---
 
-Add https://zaheer-r.github.io to Google Cloud Console Authorized JavaScript origins.
-
-## Team
-
-Zaheer · Sanjay · Lakshmanan · Prof. Senthil Kumar P
+## Project layout
