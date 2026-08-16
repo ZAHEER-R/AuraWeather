@@ -4,9 +4,9 @@
 
 AuraWeather is a personal weather & life-intelligence web app: live conditions, radar-style maps, place-aware news, health & clothing guidance, travel safety, and optional sign-in — all in a responsive PWA UI (light / dark).
 
-**download**
-[Download AuraWeather v4.2](./downloads/auraweatherv4.2.apk)
-[Download AuraWeather v4.2](./downloads/ios_auraweather.gz)
+**download AuraWeather**
+[v4.2 apk](./downloads/auraweatherv4.2.apk)
+[v4.2 ios](./downloads/ios_auraweather.gz)
 ---
 
 ## What's new in v4.3
