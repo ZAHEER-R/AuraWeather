@@ -44,7 +44,9 @@ manifest.json       PWA
    - current-location weather alerts
    - forgot-password OTP delivery
 3. Never put server secrets or private keys in client code.
-
+4. OpenWeather for Weather MAP API
+5. NewsAPI for Weather news
+6. WeatherAPI for Real Time Weather
 ## Deploy (GitHub Pages)
 
 ```bash
