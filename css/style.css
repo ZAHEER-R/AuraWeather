@@ -2015,13 +2015,13 @@ body {
 }
 
 /* Profile — small Download APK button (bottom) */
-.profile-apk-row {
+.profile-apkk-row {
   display: flex;
   justify-content: center;
   margin: 8px 0 24px;
   padding-bottom: 8px;
 }
-.download-apk-btn {
+.download-apkk-btn, .download-ios-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -2035,10 +2035,16 @@ body {
   font-family: inherit;
   cursor: pointer;
   transition: 0.2s;
+  margin-left:35%
 }
-.download-apk-btn:hover {
+.download-apkk-btn:hover,.download-ios-btn:hover {
   background: rgba(110, 182, 255, 0.22);
   border-color: rgba(110, 182, 255, 0.45);
   box-shadow: var(--glow);
 }
-.download-apk-btn i { font-size: 1rem; color: #3ddc84; }
+.download-apkk-btn i { font-size: 1rem; color: #24814e; }
+.download-ios-btn{margin-left:2%;}
+.download-ios-btn i, .fa-apple { font-size: 1rem; color: #6a6d6c; }
+@media only screen and (max-width: 600px) {
+.download-ios-btn{margin-left:36%;margin-top:4%;}
+}
