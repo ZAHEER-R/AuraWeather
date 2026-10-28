@@ -60,4 +60,4 @@ Add https://zaheer-r.github.io to Google Cloud Console Authorized JavaScript ori
 
 ## Team
 
-Zaheer · Sanjay · Lakshmanan · Prof. Senthil Kumar P
+Zaheer · Manoj Goud · Syed Saifullah · Prof. Swetha Bhattacharya
